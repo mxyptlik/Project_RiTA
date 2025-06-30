@@ -1,0 +1,68 @@
+# version: '3.9'
+
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chatbot-backend
+    command: uvicorn main:app --host 0.0.0.0 --port 8001
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - chromadb
+    expose:
+      - "8001"
+    ports:
+      - "8001:8001"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - backend
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certificate/conf:/etc/letsencrypt
+      - ./certificate/www:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c 'trap exit TERM;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet --deploy-hook "nginx -s reload";
+        sleep 12h & wait $${!};
+      done;'
+    restart: always
+    container_name: certbot
+
+volumes:
+  redis_data:
+  chroma_data:
+  certbot-etc:
+  certbot-var:

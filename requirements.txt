@@ -1,0 +1,25 @@
+langchain-openai==0.3.12
+python-dotenv==1.0.1
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.25.0
+langchain-community==0.3.24
+langchain-chroma==0.2.4
+pypdf==4.2.0
+openai==1.69.0
+tiktoken==0.7.0
+langchain-core == 0.3.61
+langchain==0.3.25
+fastapi>=0.110.0
+uvicorn>=0.29.0
+pinecone==6.0.2
+langchain-pinecone==0.2.6
+rapidfuzz>=3.6.1
+python-multipart>=0.0.9
+pydantic>=2.0.0
+chromadb>=0.4.10
+opentelemetry-instrumentation-pinecone
+redis
+slowapi
+opentelemetry-instrumentation-fastapi
+opentelemetry-sdk
+duckduckgo-search
